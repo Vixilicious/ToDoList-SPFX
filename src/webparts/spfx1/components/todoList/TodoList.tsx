@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import React, { Component } from "react";
-import { ITask } from "../../../../entities/ITask";
-import { ITaskList } from "../../../../entities/ITaskList";
-import { ITodoListProps } from "../../../../entities/ITodoListProps";
+import React, { Component } from 'react';
+import { ITask } from '../../../../entities/ITask';
+import { ITaskList } from '../../../../entities/ITaskList';
+import { ITodoListProps } from '../../../../entities/ITodoListProps';
 
 export default class TodoList extends Component<{}, ITaskList> {
   constructor(props: ITodoListProps) {
     super(props);
     this.state = {
       tasks: [] as ITask[],
-      newTitle: "",
-      editedTitle: "",
+      newTitle: '',
+      editedTitle: '',
     };
   }
 
   render() {
-    const { tasks, newTitle } = this.state;
+    const { tasks, newTitle, editedTitle } = this.state;
     return (
       <div>
         <h1>To-Do List</h1>
@@ -29,8 +29,20 @@ export default class TodoList extends Component<{}, ITaskList> {
                 checked={task.completed}
                 onChange={() => this.handleTask(task)}
               />
-              <span>{task.title}</span>
-              <button onClick={() => this.handleTaskEdit(newTitle)}></button>
+              {task.editing ? (
+                <input
+                  type='text'
+                  value={task.title}
+                  onChange={(e) => {
+                    this.setState({ editedTitle: e.target.value });
+                  }}
+                />
+              ) : (
+                <span>{task.title}</span>
+              )}
+              <button onClick={() => this.handleTaskEdit(task)}>
+                Edit
+              </button>
             </li>
           ))}
         </ul>
@@ -87,14 +99,18 @@ export default class TodoList extends Component<{}, ITaskList> {
     this.setState({ tasks: filteredTasks });
   }
 
-  private titleEditing(tasks: ITask[]) {
-    tasks.map((task: ITask) => {
-      task.editing = true;
+  private handleTaskEdit(task: ITask) {
+    const { tasks } = this.state;
+    const updatedTasks = tasks.map((t) => {
+      if (t.id === task.id) {
+        return {
+          ...t,
+          editing: true,
+          editedTitle: task.title,
+        };
+      }
+      return t;
     });
-  }
-
-  private handleTaskEdit(tasks: ITask[], editedTitle: string) {
-    const taskInEdit = tasks.map((task: ITask) => task.editing);
-    this;
+    this.setState({ tasks: updatedTasks });
   }
 }
