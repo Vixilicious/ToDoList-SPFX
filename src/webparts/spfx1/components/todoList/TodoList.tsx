@@ -141,6 +141,8 @@ export default class TodoList extends React.Component<
                     className='editBtns'
                     onClick={() => this.handleTaskEdit(task)}
                   >
+                    {" "}
+                    hej
                     <svg
                       stroke='currentColor'
                       fill='currentColor'
